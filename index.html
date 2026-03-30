@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electronics Toolkit</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --panel: #0d1117;
+    --panel2: #111820;
+    --border: #1e3a4a;
+    --accent: #00d4ff;
+    --accent2: #00ff88;
+    --accent3: #ff6b35;
+    --text: #c8d8e8;
+    --text-dim: #5a7a8a;
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+    --glow2: 0 0 20px rgba(0,255,136,0.3);
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-display: 'Orbitron', sans-serif;
+    --font-body: 'Exo 2', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,212,255,0.015) 40px, rgba(0,212,255,0.015) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,212,255,0.015) 40px, rgba(0,212,255,0.015) 41px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .scanline {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.4;
+    animation: scan 4s linear infinite;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100vh; }
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 32px 0 24px;
+  }
+
+  .logo-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 10px;
+  }
+
+  header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 900;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(0,212,255,0.4));
+  }
+
+  .header-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+    margin-top: 18px;
+    opacity: 0.6;
+  }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+    justify-content: center;
+  }
+
+  .tab-btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    position: relative;
+  }
+
+  .tab-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,212,255,0.05);
+  }
+
+  .tab-btn.active {
+    background: rgba(0,212,255,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .tab-btn .tab-num {
+    color: var(--accent2);
+    margin-right: 6px;
+    font-size: 9px;
+  }
+
+  /* PANEL */
+  .tool-panel {
+    display: none;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 32px;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .tool-panel.active { display: block; }
+
+  .tool-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-title {
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .panel-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* FORM ELEMENTS */
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  input[type="text"], input[type="number"], select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(0,212,255,0.2);
+  }
+
+  select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300d4ff' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+
+  select option { background: var(--panel2); }
+
+  /* BUTTONS */
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #007fa8);
+    color: #000;
+    font-weight: 600;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  }
+
+  .btn-primary:hover {
+    box-shadow: var(--glow);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  /* GRID */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* RESULT BOX */
+  .result-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2);
+    padding: 24px;
+    margin-top: 24px;
+    display: none;
+  }
+
+  .result-box.show { display: block; animation: fadeIn 0.3s ease; }
+
+  .result-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(30,58,74,0.5);
+    gap: 16px;
+  }
+
+  .result-row:last-child { border-bottom: none; }
+
+  .result-key {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  .result-val {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    color: var(--accent);
+    text-align: right;
+    word-break: break-all;
+  }
+
+  .result-val.green { color: var(--accent2); }
+  .result-val.orange { color: var(--accent3); }
+
+  .error-box {
+    background: rgba(255,107,53,0.08);
+    border: 1px solid rgba(255,107,53,0.4);
+    border-left: 3px solid var(--accent3);
+    padding: 16px 20px;
+    margin-top: 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent3);
+    display: none;
+  }
+
+  .error-box.show { display: block; animation: fadeIn 0.2s ease; }
+
+  /* NUMBER SYSTEM */
+  .ns-sub-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    background: var(--bg);
+    padding: 4px;
+    border: 1px solid var(--border);
+  }
+
+  .ns-tab {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .ns-tab.active {
+    background: rgba(0,212,255,0.15);
+    color: var(--accent);
+  }
+
+  .ns-content { display: none; }
+  .ns-content.active { display: block; }
+
+  /* RESISTOR COLOR BANDS */
+  .color-bands-visual {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: #c8b880;
+    border-radius: 4px;
+    padding: 12px 20px;
+    margin: 20px 0;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .resistor-body {
+    width: 160px;
+    height: 32px;
+    background: linear-gradient(180deg, #d4c48a, #b8a460, #d4c48a);
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+
+  .resistor-lead {
+    width: 30px;
+    height: 3px;
+    background: #888;
+    border-radius: 2px;
+  }
+
+  .color-band {
+    width: 16px;
+    height: 100%;
+    border-radius: 2px;
+    transition: background 0.3s;
+  }
+
+  .color-band.band4 { width: 12px; margin-left: 4px; }
+
+  /* LOGIC GATES */
+  .gate-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .gate-btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 12px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .gate-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .gate-btn.active {
+    background: rgba(0,212,255,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .toggle-btn {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    padding: 20px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    display: block;
+    width: 100%;
+  }
+
+  .toggle-btn.on {
+    background: rgba(0,255,136,0.1);
+    border-color: var(--accent2);
+    color: var(--accent2);
+    box-shadow: var(--glow2);
+  }
+
+  .toggle-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 4px;
+    font-family: var(--font-mono);
+    opacity: 0.6;
+  }
+
+  .output-display {
+    text-align: center;
+    padding: 28px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    margin-top: 20px;
+    display: none;
+  }
+
+  .output-display.show { display: block; animation: fadeIn 0.3s; }
+
+  .output-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .output-value {
+    font-family: var(--font-display);
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .output-value.out-1 {
+    color: var(--accent2);
+    filter: drop-shadow(0 0 20px rgba(0,255,136,0.6));
+  }
+
+  .output-value.out-0 {
+    color: var(--accent3);
+    filter: drop-shadow(0 0 20px rgba(255,107,53,0.4));
+  }
+
+  /* E-Series */
+  .eseries-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  @media (max-width: 500px) { .eseries-cards { grid-template-columns: 1fr; } }
+
+  .eseries-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .eseries-name {
+    font-family: var(--font-display);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eseries-val {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    margin: 6px 0;
+  }
+
+  .eseries-val span { color: var(--text-dim); font-size: 10px; display: block; }
+
+  .eseries-val.exact { color: var(--accent2); }
+  .eseries-val.below { color: var(--accent); }
+  .eseries-val.above { color: var(--accent3); }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 32px 0 16px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    opacity: 0.4;
+    position: relative;
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<div class="container">
+  <header>
+    <div class="logo-tag">// v2.0 — DIGITAL LAB</div>
+    <h1>Electronics Toolkit</h1>
+    <div class="header-line"></div>
+  </header>
+
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab('ns')"><span class="tab-num">01</span>Number System</button>
+    <button class="tab-btn" onclick="showTab('rcc')"><span class="tab-num">02</span>Resistor Color</button>
+    <button class="tab-btn" onclick="showTab('rf')"><span class="tab-num">03</span>Resistor Finder</button>
+    <button class="tab-btn" onclick="showTab('gc')"><span class="tab-num">04</span>Gray Code</button>
+    <button class="tab-btn" onclick="showTab('lg')"><span class="tab-num">05</span>Logic Gates</button>
+  </nav>
+
+  <!-- NUMBER SYSTEM -->
+  <div id="ns" class="tool-panel active">
+    <div class="panel-title">Number System Converter</div>
+
+    <div class="ns-sub-tabs">
+      <button class="ns-tab active" onclick="showNS('dec')">DEC</button>
+      <button class="ns-tab" onclick="showNS('bin')">BIN</button>
+      <button class="ns-tab" onclick="showNS('oct')">OCT</button>
+      <button class="ns-tab" onclick="showNS('hex')">HEX</button>
+    </div>
+
+    <div id="ns-dec" class="ns-content active">
+      <div class="form-group">
+        <label>Decimal Input</label>
+        <input type="number" id="dec-input" placeholder="Enter decimal number…" min="0">
+      </div>
+      <button class="btn btn-primary" onclick="convertDec()">Convert →</button>
+    </div>
+
+    <div id="ns-bin" class="ns-content">
+      <div class="form-group">
+        <label>Binary Input (0s and 1s only)</label>
+        <input type="text" id="bin-input" placeholder="e.g. 11010110">
+      </div>
+      <button class="btn btn-primary" onclick="convertBin()">Convert →</button>
+    </div>
+
+    <div id="ns-oct" class="ns-content">
+      <div class="form-group">
+        <label>Octal Input (digits 0–7)</label>
+        <input type="text" id="oct-input" placeholder="e.g. 325">
+      </div>
+      <button class="btn btn-primary" onclick="convertOct()">Convert →</button>
+    </div>
+
+    <div id="ns-hex" class="ns-content">
+      <div class="form-group">
+        <label>Hexadecimal Input (0–9, A–F)</label>
+        <input type="text" id="hex-input" placeholder="e.g. 1A3F">
+      </div>
+      <button class="btn btn-primary" onclick="convertHex()">Convert →</button>
+    </div>
+
+    <div id="ns-error" class="error-box"></div>
+    <div id="ns-result" class="result-box">
+      <div class="result-title">// output</div>
+    </div>
+  </div>
+
+  <!-- RESISTOR COLOR CODE -->
+  <div id="rcc" class="tool-panel">
+    <div class="panel-title">Resistor Color Code</div>
+
+    <div class="color-bands-visual">
+      <div class="resistor-lead"></div>
+      <div class="resistor-body">
+        <div class="color-band" id="vis-b1" style="background:#d4c48a"></div>
+        <div class="color-band" id="vis-b2" style="background:#d4c48a"></div>
+        <div class="color-band" id="vis-b3" style="background:#d4c48a"></div>
+        <div class="color-band band4" id="vis-b4" style="background:#d4c48a"></div>
+      </div>
+      <div class="resistor-lead"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Band 1 (1st Digit)</label>
+        <select id="rcc-b1" onchange="updateBandVisual()">
+          <option value="">Select color</option>
+          <option value="black">Black — 0</option>
+          <option value="brown">Brown — 1</option>
+          <option value="red">Red — 2</option>
+          <option value="orange">Orange — 3</option>
+          <option value="yellow">Yellow — 4</option>
+          <option value="green">Green — 5</option>
+          <option value="blue">Blue — 6</option>
+          <option value="violet">Violet — 7</option>
+          <option value="grey">Grey — 8</option>
+          <option value="white">White — 9</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Band 2 (2nd Digit)</label>
+        <select id="rcc-b2" onchange="updateBandVisual()">
+          <option value="">Select color</option>
+          <option value="black">Black — 0</option>
+          <option value="brown">Brown — 1</option>
+          <option value="red">Red — 2</option>
+          <option value="orange">Orange — 3</option>
+          <option value="yellow">Yellow — 4</option>
+          <option value="green">Green — 5</option>
+          <option value="blue">Blue — 6</option>
+          <option value="violet">Violet — 7</option>
+          <option value="grey">Grey — 8</option>
+          <option value="white">White — 9</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Band 3 (Multiplier)</label>
+        <select id="rcc-b3" onchange="updateBandVisual()">
+          <option value="">Select color</option>
+          <option value="black">Black — ×1</option>
+          <option value="brown">Brown — ×10</option>
+          <option value="red">Red — ×100</option>
+          <option value="orange">Orange — ×1K</option>
+          <option value="yellow">Yellow — ×10K</option>
+          <option value="green">Green — ×100K</option>
+          <option value="blue">Blue — ×1M</option>
+          <option value="violet">Violet — ×10M</option>
+          <option value="grey">Grey — ×100M</option>
+          <option value="white">White — ×1G</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Band 4 (Tolerance)</label>
+        <select id="rcc-b4" onchange="updateBandVisual()">
+          <option value="">Select color</option>
+          <option value="gold">Gold — ±5%</option>
+          <option value="silver">Silver — ±10%</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="calcResistor()">Calculate →</button>
+
+    <div id="rcc-error" class="error-box"></div>
+    <div id="rcc-result" class="result-box">
+      <div class="result-title">// output</div>
+    </div>
+  </div>
+
+  <!-- RESISTOR FINDER -->
+  <div id="rf" class="tool-panel">
+    <div class="panel-title">Resistor Value Finder</div>
+
+    <div class="form-group">
+      <label>Target Resistance (Ω)</label>
+      <input type="number" id="rf-input" placeholder="e.g. 4700" min="0" step="any">
+    </div>
+    <button class="btn btn-primary" onclick="findResistor()">Find Nearest →</button>
+
+    <div id="rf-error" class="error-box"></div>
+    <div id="rf-result" class="eseries-cards" style="display:none"></div>
+  </div>
+
+  <!-- GRAY CODE -->
+  <div id="gc" class="tool-panel">
+    <div class="panel-title">Gray Code Converter</div>
+
+    <div class="form-group">
+      <label>Binary Input (0s and 1s only)</label>
+      <input type="text" id="gc-input" placeholder="e.g. 1011">
+    </div>
+    <button class="btn btn-primary" onclick="convertGray()">Convert to Gray →</button>
+
+    <div id="gc-error" class="error-box"></div>
+    <div id="gc-result" class="result-box">
+      <div class="result-title">// output</div>
+    </div>
+  </div>
+
+  <!-- LOGIC GATES -->
+  <div id="lg" class="tool-panel">
+    <div class="panel-title">Logic Gates Simulator</div>
+
+    <div class="gate-grid">
+      <button class="gate-btn active" onclick="selectGate('AND', this)">AND</button>
+      <button class="gate-btn" onclick="selectGate('OR', this)">OR</button>
+      <button class="gate-btn" onclick="selectGate('NOT', this)">NOT</button>
+      <button class="gate-btn" onclick="selectGate('NAND', this)">NAND</button>
+      <button class="gate-btn" onclick="selectGate('NOR', this)">NOR</button>
+      <button class="gate-btn" onclick="selectGate('XOR', this)">XOR</button>
+      <button class="gate-btn" onclick="selectGate('XNOR', this)">XNOR</button>
+    </div>
+
+    <div class="io-grid">
+      <div>
+        <button class="toggle-btn" id="lg-a" onclick="toggleInput('A')">0<span class="toggle-label">Input A</span></button>
+      </div>
+      <div id="lg-b-wrap">
+        <button class="toggle-btn" id="lg-b" onclick="toggleInput('B')">0<span class="toggle-label">Input B</span></button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="computeGate()">Compute →</button>
+
+    <div id="lg-output" class="output-display">
+      <div class="output-label">// output</div>
+      <div id="lg-output-val" class="output-value">—</div>
+      <div id="lg-output-desc" style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);margin-top:12px;letter-spacing:1px;"></div>
+    </div>
+  </div>
+</div>
+
+<footer>ELECTRONICS TOOLKIT — DESIGNED FOR ENGINEERS</footer>
+
+<script>
+// ─── TAB SWITCHING ──────────────────────────────────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ─── NUMBER SYSTEM ──────────────────────────────────────────────────────────
+let currentNS = 'dec';
+
+function showNS(type) {
+  document.querySelectorAll('.ns-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.ns-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('ns-' + type).classList.add('active');
+  event.currentTarget.classList.add('active');
+  currentNS = type;
+  hideResult('ns');
+}
+
+function hideResult(prefix) {
+  const r = document.getElementById(prefix + '-result');
+  const e = document.getElementById(prefix + '-error');
+  if (r) r.classList.remove('show');
+  if (e) e.classList.remove('show');
+}
+
+function showNSResult(rows) {
+  const box = document.getElementById('ns-result');
+  const err = document.getElementById('ns-error');
+  err.classList.remove('show');
+  box.innerHTML = '<div class="result-title">// output</div>' +
+    rows.map((r, i) => `<div class="result-row"><span class="result-key">${r[0]}</span><span class="result-val ${i===0?'green':''}">${r[1]}</span></div>`).join('');
+  box.classList.add('show');
+}
+
+function showNSError(msg) {
+  const err = document.getElementById('ns-error');
+  err.textContent = '⚠ ' + msg;
+  err.classList.add('show');
+  document.getElementById('ns-result').classList.remove('show');
+}
+
+function decToBin(n) {
+  if (n === 0) return '0';
+  let r = '';
+  while (n > 0) { r = (n % 2) + r; n = Math.floor(n / 2); }
+  return r;
+}
+
+function decToOct(n) {
+  if (n === 0) return '0';
+  let r = '';
+  while (n > 0) { r = (n % 8) + r; n = Math.floor(n / 8); }
+  return r;
+}
+
+function decToHex(n) {
+  if (n === 0) return '0';
+  const d = '0123456789ABCDEF';
+  let r = '';
+  while (n > 0) { r = d[n % 16] + r; n = Math.floor(n / 16); }
+  return r;
+}
+
+function binToDec(b) {
+  let d = 0;
+  for (let c of b) d = d * 2 + parseInt(c);
+  return d;
+}
+
+function octToDec(o) {
+  let d = 0;
+  for (let c of o) d = d * 8 + parseInt(c);
+  return d;
+}
+
+function hexToDec(h) {
+  let d = 0;
+  for (let c of h.toUpperCase()) {
+    d = d * 16 + (c >= 'A' ? c.charCodeAt(0) - 55 : parseInt(c));
+  }
+  return d;
+}
+
+function convertDec() {
+  const v = parseInt(document.getElementById('dec-input').value);
+  if (isNaN(v) || v < 0) return showNSError('Enter a valid non-negative decimal number.');
+  showNSResult([
+    ['Binary', decToBin(v)],
+    ['Octal', decToOct(v)],
+    ['Hexadecimal', decToHex(v)],
+  ]);
+}
+
+function convertBin() {
+  const v = document.getElementById('bin-input').value.trim();
+  if (!v || !/^[01]+$/.test(v)) return showNSError('Invalid binary! Use only 0s and 1s.');
+  const dec = binToDec(v);
+  showNSResult([
+    ['Decimal', dec],
+    ['Octal', decToOct(dec)],
+    ['Hexadecimal', decToHex(dec)],
+  ]);
+}
+
+function convertOct() {
+  const v = document.getElementById('oct-input').value.trim();
+  if (!v || !/^[0-7]+$/.test(v)) return showNSError('Invalid octal! Use only digits 0–7.');
+  const dec = octToDec(v);
+  showNSResult([
+    ['Decimal', dec],
+    ['Binary', decToBin(dec)],
+    ['Hexadecimal', decToHex(dec)],
+  ]);
+}
+
+function convertHex() {
+  const v = document.getElementById('hex-input').value.trim().toUpperCase();
+  if (!v || !/^[0-9A-F]+$/.test(v)) return showNSError('Invalid hex! Use 0–9 and A–F only.');
+  const dec = hexToDec(v);
+  showNSResult([
+    ['Decimal', dec],
+    ['Binary', decToBin(dec)],
+    ['Octal', decToOct(dec)],
+  ]);
+}
+
+// ─── RESISTOR COLOR CODE ─────────────────────────────────────────────────────
+const colorMap = {
+  black: { val: 0, mult: 1, hex: '#1a1a1a' },
+  brown: { val: 1, mult: 10, hex: '#8B4513' },
+  red: { val: 2, mult: 100, hex: '#cc2200' },
+  orange: { val: 3, mult: 1000, hex: '#ff8800' },
+  yellow: { val: 4, mult: 10000, hex: '#ddcc00' },
+  green: { val: 5, mult: 100000, hex: '#228833' },
+  blue: { val: 6, mult: 1000000, hex: '#2255aa' },
+  violet: { val: 7, mult: 10000000, hex: '#7722cc' },
+  grey: { val: 8, mult: 100000000, hex: '#888888' },
+  white: { val: 9, mult: 1000000000, hex: '#eeeeee' },
+  gold: { hex: '#c8a000' },
+  silver: { hex: '#aaaaaa' },
+};
+
+function updateBandVisual() {
+  const ids = ['rcc-b1', 'rcc-b2', 'rcc-b3', 'rcc-b4'];
+  const visIds = ['vis-b1', 'vis-b2', 'vis-b3', 'vis-b4'];
+  ids.forEach((id, i) => {
+    const val = document.getElementById(id).value;
+    const el = document.getElementById(visIds[i]);
+    el.style.background = val && colorMap[val] ? colorMap[val].hex : '#c8b880';
+  });
+}
+
+function formatOhms(r) {
+  if (r >= 1e9) return (r / 1e9).toFixed(r % 1e9 ? 2 : 0) + ' GΩ';
+  if (r >= 1e6) return (r / 1e6).toFixed(r % 1e6 ? 2 : 0) + ' MΩ';
+  if (r >= 1e3) return (r / 1e3).toFixed(r % 1e3 ? 2 : 0) + ' kΩ';
+  return r + ' Ω';
+}
+
+function calcResistor() {
+  const b1 = document.getElementById('rcc-b1').value;
+  const b2 = document.getElementById('rcc-b2').value;
+  const b3 = document.getElementById('rcc-b3').value;
+  const b4 = document.getElementById('rcc-b4').value;
+  const err = document.getElementById('rcc-error');
+  const res = document.getElementById('rcc-result');
+
+  if (!b1 || !b2 || !b3 || !b4) {
+    err.textContent = '⚠ Please select all four band colors.';
+    err.classList.add('show');
+    res.classList.remove('show');
+    return;
+  }
+  err.classList.remove('show');
+
+  const d1 = colorMap[b1].val;
+  const d2 = colorMap[b2].val;
+  const mult = colorMap[b3].mult;
+  const resistance = (d1 * 10 + d2) * mult;
+  const tolerance = b4 === 'gold' ? '±5%' : '±10%';
+
+  res.innerHTML = `<div class="result-title">// output</div>
+    <div class="result-row"><span class="result-key">Resistance</span><span class="result-val green">${formatOhms(resistance)}</span></div>
+    <div class="result-row"><span class="result-key">Raw Value</span><span class="result-val">${resistance.toLocaleString()} Ω</span></div>
+    <div class="result-row"><span class="result-key">Tolerance</span><span class="result-val orange">${tolerance}</span></div>
+    <div class="result-row"><span class="result-key">Min Value</span><span class="result-val">${formatOhms(resistance * (1 - (b4 === 'gold' ? 0.05 : 0.1)))}</span></div>
+    <div class="result-row"><span class="result-key">Max Value</span><span class="result-val">${formatOhms(resistance * (1 + (b4 === 'gold' ? 0.05 : 0.1)))}</span></div>`;
+  res.classList.add('show');
+}
+
+// ─── RESISTOR FINDER ─────────────────────────────────────────────────────────
+const E6  = [1.0, 1.5, 2.2, 3.3, 4.7, 6.8];
+const E12 = [1.0, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2];
+const E24 = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0,
+             3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1];
+const MULTS = [1, 10, 100, 1000, 10000, 100000, 1000000];
+
+function findNearest(series, target) {
+  let lower = -1, upper = -1;
+  for (let d of MULTS) {
+    for (let b of series) {
+      const v = Math.round(b * d * 1000) / 1000;
+      if (v <= target && v > lower) lower = v;
+      if (v >= target && (upper === -1 || v < upper)) upper = v;
+    }
+  }
+  return { lower, upper, exact: lower === upper };
+}
+
+function findResistor() {
+  const t = parseFloat(document.getElementById('rf-input').value);
+  const err = document.getElementById('rf-error');
+  const container = document.getElementById('rf-result');
+
+  if (isNaN(t) || t <= 0) {
+    err.textContent = '⚠ Enter a valid positive resistance value.';
+    err.classList.add('show');
+    container.style.display = 'none';
+    return;
+  }
+  err.classList.remove('show');
+
+  const series = [
+    { name: 'E6', data: E6 },
+    { name: 'E12', data: E12 },
+    { name: 'E24', data: E24 },
+  ];
+
+  container.innerHTML = series.map(s => {
+    const r = findNearest(s.data, t);
+    let inner = '';
+    if (r.exact) {
+      inner = `<div class="eseries-val exact">${formatOhms(r.lower)}<span>Exact Match ✓</span></div>`;
+    } else {
+      if (r.lower !== -1) inner += `<div class="eseries-val below">${formatOhms(r.lower)}<span>Below</span></div>`;
+      if (r.upper !== -1) inner += `<div class="eseries-val above">${formatOhms(r.upper)}<span>Above</span></div>`;
+    }
+    return `<div class="eseries-card"><div class="eseries-name">${s.name}</div>${inner}</div>`;
+  }).join('');
+  container.style.display = 'grid';
+}
+
+// ─── GRAY CODE ────────────────────────────────────────────────────────────────
+function convertGray() {
+  const v = document.getElementById('gc-input').value.trim();
+  const err = document.getElementById('gc-error');
+  const res = document.getElementById('gc-result');
+
+  if (!v || !/^[01]+$/.test(v)) {
+    err.textContent = '⚠ Invalid binary! Use only 0s and 1s.';
+    err.classList.add('show');
+    res.classList.remove('show');
+    return;
+  }
+  err.classList.remove('show');
+
+  let gray = v[0];
+  for (let i = 1; i < v.length; i++) {
+    gray += (parseInt(v[i-1]) ^ parseInt(v[i])).toString();
+  }
+
+  res.innerHTML = `<div class="result-title">// output</div>
+    <div class="result-row"><span class="result-key">Binary Input</span><span class="result-val">${v}</span></div>
+    <div class="result-row"><span class="result-key">Gray Code</span><span class="result-val green">${gray}</span></div>
+    <div class="result-row"><span class="result-key">Bit Length</span><span class="result-val">${v.length} bits</span></div>`;
+  res.classList.add('show');
+}
+
+// ─── LOGIC GATES ─────────────────────────────────────────────────────────────
+let lgGate = 'AND';
+let lgA = 0, lgB = 0;
+
+function selectGate(gate, el) {
+  lgGate = gate;
+  document.querySelectorAll('.gate-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const bWrap = document.getElementById('lg-b-wrap');
+  bWrap.style.opacity = gate === 'NOT' ? '0.3' : '1';
+  bWrap.style.pointerEvents = gate === 'NOT' ? 'none' : 'auto';
+  document.getElementById('lg-output').classList.remove('show');
+}
+
+function toggleInput(inp) {
+  if (inp === 'A') {
+    lgA = lgA === 0 ? 1 : 0;
+    const el = document.getElementById('lg-a');
+    el.textContent = lgA;
+    el.appendChild(Object.assign(document.createElement('span'), {className:'toggle-label',textContent:'Input A'}));
+    el.classList.toggle('on', lgA === 1);
+  } else {
+    lgB = lgB === 0 ? 1 : 0;
+    const el = document.getElementById('lg-b');
+    el.textContent = lgB;
+    el.appendChild(Object.assign(document.createElement('span'), {className:'toggle-label',textContent:'Input B'}));
+    el.classList.toggle('on', lgB === 1);
+  }
+}
+
+function computeGate() {
+  const gates = {
+    AND:  (a, b) => a & b,
+    OR:   (a, b) => a | b,
+    NOT:  (a)    => a === 0 ? 1 : 0,
+    NAND: (a, b) => (a & b) === 1 ? 0 : 1,
+    NOR:  (a, b) => (a | b) === 1 ? 0 : 1,
+    XOR:  (a, b) => a ^ b,
+    XNOR: (a, b) => (a ^ b) === 0 ? 1 : 0,
+  };
+  const out = gates[lgGate](lgA, lgB);
+  const disp = document.getElementById('lg-output');
+  const val = document.getElementById('lg-output-val');
+  const desc = document.getElementById('lg-output-desc');
+  val.textContent = out;
+  val.className = 'output-value out-' + out;
+  const gateDesc = {
+    AND: `${lgA} AND ${lgB}`,
+    OR: `${lgA} OR ${lgB}`,
+    NOT: `NOT ${lgA}`,
+    NAND: `NOT (${lgA} AND ${lgB})`,
+    NOR: `NOT (${lgA} OR ${lgB})`,
+    XOR: `${lgA} XOR ${lgB}`,
+    XNOR: `NOT (${lgA} XOR ${lgB})`,
+  };
+  desc.textContent = gateDesc[lgGate] + ' = ' + out;
+  disp.classList.add('show');
+}
+
+// Enter key support
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const active = document.querySelector('.tool-panel.active');
+  if (!active) return;
+  const id = active.id;
+  if (id === 'ns') {
+    if (currentNS === 'dec') convertDec();
+    else if (currentNS === 'bin') convertBin();
+    else if (currentNS === 'oct') convertOct();
+    else convertHex();
+  } else if (id === 'rcc') calcResistor();
+  else if (id === 'rf') findResistor();
+  else if (id === 'gc') convertGray();
+  else if (id === 'lg') computeGate();
+});
+</script>
+</body>
+</html>
